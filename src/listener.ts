@@ -19,11 +19,15 @@ stan.on('connect', () => {
   const options = stan
     .subscriptionOptions()
     .setManualAckMode(true)
-    .setDeliverAllAvailable();
-  // .setStartWithLastReceived();
+    .setDeliverAllAvailable()
+    // .setStartWithLastReceived()
+    .setDurableName('orders-service');
   const subscription = stan.subscribe(
     'ticket:created',
-    // 'orders-service-queue-group',
+    // queue group used for
+    // 1 - if we have 2 listeners with same queue group message will be consumed in one of them using round robin
+    // 2 - persist durable name subscription as if we restart listener durable name will be removed & will consume all messages from beginning
+    'orders-service-queue-group',
     options
   );
 
